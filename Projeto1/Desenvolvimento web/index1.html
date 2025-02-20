@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace PUC</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .search-bar {
+            margin-top: 20px;
+        }
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            padding: 20px;
+            width: 250px;
+            text-align: center;
+        }
+        .card img {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 50px;
+        }
+        .form-container input, .form-container select, .form-container button {
+            margin: 10px;
+            padding: 10px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Página de Cadastro -->
+    <div id="cadastro" style="display:block;">
+        <div class="form-container">
+            <h2>Cadastro - Escolha o tipo de serviço</h2>
+            <label for="tipo">Escolha o tipo:</label>
+            <select id="tipo">
+                <option value="vender">Vender</option>
+                <option value="servico">Usar Serviço</option>
+                <option value="ambos">Ambos</option>
+            </select>
+
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" placeholder="Nome do Produto/Serviço">
+
+            <label for="preco">Preço:</label>
+            <input type="text" id="preco" placeholder="Preço (R$)">
+
+            <button onclick="proseguirCadastro()">Prosseguir</button>
+        </div>
+    </div>
+
+    <!-- Página de Produtos e Monitorias -->
+    <div id="produtos-monitorias" style="display:none;">
+        <header>
+            <div class="logo">Marketplace PUC</div>
+            <nav>
+                <ul>
+                    <li><a href="#" onclick="showSearch('produto')">Produtos</a></li>
+                    <li><a href="#" onclick="showSearch('monitoria')">Monitorias</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <section id="produtos" class="section">
+            <h2>Produtos dos Alunos</h2>
+            <div id="produtos-search-bar" class="search-bar" style="display:none;">
+                <input type="text" id="search-produto" placeholder="Buscar produto..." style="width: 300px; padding: 10px;">
+                <button onclick="searchItems('produto')">🔍</button>
+            </div>
+            <div id="produtos-results" class="grid"></div>
+        </section>
+
+        <section id="monitorias" class="section">
+            <h2>Monitorias Disponíveis</h2>
+            <div id="monitorias-search-bar" class="search-bar" style="display:none;">
+                <input type="text" id="search-monitoria" placeholder="Buscar monitoria..." style="width: 300px; padding: 10px;">
+                <button onclick="searchItems('monitoria')">🔍</button>
+            </div>
+            <div id="monitorias-results" class="grid"></div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Marketplace PUC - Todos os direitos reservados</p>
+    </footer>
+
+    <script>
+        // Armazenando os itens (produtos e monitorias)
+        const items = [
+            { nome: "Blusa de Ciência da Computação", foto: "blusa.jpg", telefone: "(11) 66666-6666", tipo: "produto", vendedor: "João", whatsapp: "https://wa.me/551166666666", especialidade: "Moda", preco: 50 },
+            { nome: "Alfajor Caseiro", foto: "alfajor.avif", telefone: "(11) 88888-8888", tipo: "produto", vendedor: "Maria", whatsapp: "https://wa.me/551188888888", especialidade: "Confeitaria", preco: 25 },
+            { nome: "Aula de Cálculo", foto: "calc.jpg", telefone: "(11) 99999-9999", tipo: "monitoria", disponibilidade: "Online e Presencial", preco: 40 },
+            { nome: "Aula de Francês", foto: "frances.jpg", telefone: "(11) 77777-7777", tipo: "monitoria", disponibilidade: "Online", preco: 35 },
+            { nome: "Aula de Banco de Dados", foto: "bd.jpg", telefone: "(11) 44444-4444", tipo: "monitoria", disponibilidade: "Presencial", preco: 50 }
+        ];
+
+        // Função para exibir a barra de pesquisa
+        function showSearch(tipo) {
+            document.getElementById('produtos-search-bar').style.display = 'none';
+            document.getElementById('monitorias-search-bar').style.display = 'none';
+            document.getElementById('produtos-results').innerHTML = '';
+            document.getElementById('monitorias-results').innerHTML = '';
+
+            if (tipo === 'produto') {
+                document.getElementById('produtos-search-bar').style.display = 'block';
+            } else if (tipo === 'monitoria') {
+                document.getElementById('monitorias-search-bar').style.display = 'block';
+            }
+        }
+
+        // Função para realizar a busca de produtos ou monitorias
+        function searchItems(tipo) {
+            const searchValue = tipo === 'produto' ? document.getElementById("search-produto").value.toLowerCase() : document.getElementById("search-monitoria").value.toLowerCase();
+            const resultsDiv = tipo === 'produto' ? document.getElementById("produtos-results") : document.getElementById("monitorias-results");
+            resultsDiv.innerHTML = "";
+
+            const filteredItems = items.filter(item => 
+                item.tipo === tipo && item.nome.toLowerCase().includes(searchValue)
+            );
+
+            filteredItems.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "card";
+                if (tipo === 'produto') {
+                    card.innerHTML = `
+                        <img src="${item.foto}" alt="${item.nome}" style="width:100%; border-radius: 12px;">
+                        <h3>${item.nome}</h3>
+                        <p><strong>Vendedor:</strong> ${item.vendedor}</p>
+                        <p><strong>Preço:</strong> R$ ${item.preco}</p>
+                        <p><strong>Contato:</strong> ${item.telefone}</p>
+                        <a href="${item.whatsapp}" target="_blank"><button>Enviar WhatsApp</button></a>
+                    `;
+                } else if (tipo === 'monitoria') {
+                    card.innerHTML = `
+                        <img src="${item.foto}" alt="${item.nome}" style="width:100%; border-radius: 12px;">
+                        <h3>${item.nome}</h3>
+                        <p><strong>Contato:</strong> ${item.telefone}</p>
+                        <p><strong>Disponibilidade:</strong> ${item.disponibilidade}</p>
+                        <p><strong>Preço:</strong> R$ ${item.preco}</p>
+                        <button onclick="marcarMonitoria('${item.nome}')">Marcar Monitoria</button>
+                    `;
+                }
+                resultsDiv.appendChild(card);
+            });
+        }
+
+        // Função para marcar a monitoria
+        function marcarMonitoria(nome) {
+            alert(`Monitoria marcada para: ${nome}`);
+        }
+
+        // Função do cadastro para escolher a opção de serviço
+        function proseguirCadastro() {
+            const tipo = document.getElementById("tipo").value;
+            const nome = document.getElementById("nome").value;
+            const preco = document.getElementById("preco").value;
+
+            if (!nome || !preco) {
+                alert("Por favor, preencha todos os campos!");
+                return;
+            }
+
+            alert(`Cadastro realizado! Tipo: ${tipo}, Produto/Serviço: ${nome}, Preço: R$ ${preco}`);
+            document.getElementById('cadastro').style.display = 'none'; // Esconde a tela de cadastro
+            document.getElementById('produtos-monitorias').style.display = 'block'; // Exibe a página de produtos e monitorias
+        }
+    </script>
+</body>
+</html>
